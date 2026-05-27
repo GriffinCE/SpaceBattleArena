@@ -7,9 +7,12 @@ public class ExampleShip extends BasicSpaceship {
    
    private int worldWidth;
    private int worldHeight;
-   double middleX = worldWidth / 2;
-   double middleY = worldHeight / 2;
+   private double middleX;
+   private double middleY;
    private boolean facingMiddle = false;
+   private Point midpoint;
+   public double distanceToMid = 0;
+   public boolean getDistance = false;
     public static void main(String[] args)
     {
         TextClient.run("10.56.98.121", new ExampleShip());
@@ -20,19 +23,28 @@ public class ExampleShip extends BasicSpaceship {
     {
         worldWidth = tempWorldWidth;
         worldHeight = tempWorldHeight;
+        middleX = worldWidth / 2;
+        middleY = worldHeight / 2;
+        midpoint = new Point(middleX, middleY);
         return new RegistrationData("Griffin's Ship", new Color(255, 255, 255), 0);
     }
+
 
     @Override
     public ShipCommand getNextCommand(BasicEnvironment env)
     {   
-        Point midpoint = new Point(middleX, middleY);
         ObjectStatus shipStatus = env.getShipStatus();
-        System.out.println(shipStatus);
-        if (facingMiddle == true) {
-            return new ThrustCommand('B', 5, 1);
-        } else {
-            return new RotateCommand(ship.getPosition().getAngleTo(this.midpoint) - ship.getOrientation());
+        while (shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() < 5 && shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() > -5) {
+            if (!getDistance) {
+               distanceToMid = shipStatus.getPosition().getDistanceTo(midpoint);
+               getDistance = true;
+            }
+            if (shipStatus.getPosition().getDistanceTo(midpoint) <= distanceToMid / 2) {
+               return new ThrustCommand('F', 1, .5);
+            } else {
+               return new ThrustCommand('B', 5, .5);
+            }
         }
+        return new RotateCommand(shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation());
     }
 }
