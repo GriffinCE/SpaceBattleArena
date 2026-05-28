@@ -13,6 +13,8 @@ public class ExampleShip extends BasicSpaceship {
    private Point midpoint;
    public double distanceToMid = 0;
    public boolean getDistance = false;
+   public boolean torpedo = false;
+   public boolean getRadar = false;
     public static void main(String[] args)
     {
         TextClient.run("10.56.98.121", new ExampleShip());
@@ -33,16 +35,26 @@ public class ExampleShip extends BasicSpaceship {
     @Override
     public ShipCommand getNextCommand(BasicEnvironment env)
     {   
+        if (!getRadar) {
+   //        return RadarCommand(2);
+        }
         ObjectStatus shipStatus = env.getShipStatus();
         while (shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() < 5 && shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() > -5) {
             if (!getDistance) {
                distanceToMid = shipStatus.getPosition().getDistanceTo(midpoint);
                getDistance = true;
             }
-            if (shipStatus.getPosition().getDistanceTo(midpoint) <= distanceToMid / 2) {
-               return new ThrustCommand('F', 1, .5);
-            } else {
-               return new ThrustCommand('B', 5, .5);
+            if (shipStatus.getPosition().getDistanceTo(midpoint) < 200) {
+                  return new BrakeCommand(.01);
+            }
+            else {
+               if (torpedo) {
+                  torpedo = false;
+                  return new FireTorpedoCommand('F');
+               } else {
+                  torpedo = true;
+                  return new ThrustCommand('B', 1, .5);
+               }
             }
         }
         return new RotateCommand(shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation());
