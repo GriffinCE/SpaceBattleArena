@@ -37,6 +37,7 @@ public class ExampleShip extends BasicSpaceship {
     {   
         if (!getRadar) {
    //        return RadarCommand(2);
+   //        I ran out of time
         }
         ObjectStatus shipStatus = env.getShipStatus();
         while (shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() < 5 && shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() > -5) {
