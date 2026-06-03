@@ -15,6 +15,7 @@ public class ExampleShip extends BasicSpaceship {
    public boolean getDistance = false;
    public boolean torpedo = false;
    public boolean getRadar = false;
+   public boolean getRadarResults = true;
     public static void main(String[] args)
     {
         TextClient.run("10.56.98.121", new ExampleShip());
@@ -35,12 +36,23 @@ public class ExampleShip extends BasicSpaceship {
     @Override
     public ShipCommand getNextCommand(BasicEnvironment env)
     {   
-        if (!getRadar) {
-   //        return RadarCommand(2);
-   //        I ran out of time
-             getRadar = true;
-        }
         ObjectStatus shipStatus = env.getShipStatus();
+        if (!getRadar) {
+            getRadar = true;
+            getRadarResults = false;
+            return new RadarCommand(4);
+   //        I ran out of time
+        }
+        if (!getRadarResults) {
+            getRadarResults = true;
+
+            for (ObjectStatus object : shipStatus.getRadar()) {
+               if (object.getType().equals("Ship")) {
+             //     shipStatus.getPosition().getAngleTo(midpoint)
+               }
+            }
+        }
+
         while (shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() < 5 && shipStatus.getPosition().getAngleTo(midpoint) - shipStatus.getOrientation() > -5) {
             if (!getDistance) {
                distanceToMid = shipStatus.getPosition().getDistanceTo(midpoint);
